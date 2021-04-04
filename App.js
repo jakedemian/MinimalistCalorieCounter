@@ -16,16 +16,10 @@ import {
   Button,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-import Dialog from 'react-native-dialog';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 import AddItem from './src/components/AddItem';
+import ResetDay from './src/components/ResetDay';
 
 const Section = ({children, title}): Node => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -56,6 +50,7 @@ const Section = ({children, title}): Node => {
 const App: () => Node = () => {
   const isDarkMode = useColorScheme() === 'dark';
   const [dialog, setDialog] = useState({});
+  const [calories, setCalories] = useState(0);
 
   const handleAddItemCancel = () => {
     setDialog({
@@ -63,11 +58,12 @@ const App: () => Node = () => {
       addItem: false,
     });
   };
-  const handleAddItem = () => {
+  const handleAddItem = itemCalories => {
     setDialog({
       ...dialog,
       addItem: false,
     });
+    setCalories(Number(calories) + Number(itemCalories));
   };
 
   const handleResetDayCancel = () => {
@@ -81,20 +77,22 @@ const App: () => Node = () => {
       ...dialog,
       resetDay: false,
     });
+    setCalories(0);
   };
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    flex: 1,
   };
 
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
+      <ScrollView contentContainerStyle={backgroundStyle}>
         <View style={styles.container}>
-          <Text>1750</Text>
+          <View>
+            <Text style={styles.calories}>{calories}</Text>
+          </View>
           <Button
             title="Add Item"
             onPress={() => {
@@ -104,15 +102,17 @@ const App: () => Node = () => {
               });
             }}
           />
-          <Button
-            title="Reset Day"
-            onPress={() => {
-              setDialog({
-                ...dialog,
-                resetDay: true,
-              });
-            }}
-          />
+          <View style={styles.resetDay}>
+            <Button
+              title="Reset Day"
+              onPress={() => {
+                setDialog({
+                  ...dialog,
+                  resetDay: true,
+                });
+              }}
+            />
+          </View>
 
           {/*Add Food Dialog*/}
           <AddItem
@@ -122,14 +122,11 @@ const App: () => Node = () => {
           />
 
           {/*Reset Day Dialog*/}
-          <Dialog.Container visible={dialog.resetDay}>
-            <Dialog.Title>Reset?</Dialog.Title>
-            <Dialog.Description>
-              Do you want to reset the counter?
-            </Dialog.Description>
-            <Dialog.Button label="Cancel" onPress={handleResetDayCancel} />
-            <Dialog.Button label="Yes, Reset" onPress={handleResetDay} />
-          </Dialog.Container>
+          <ResetDay
+            visible={dialog.resetDay}
+            cancel={handleResetDayCancel}
+            confirm={handleResetDay}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -142,6 +139,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  calories: {
+    fontSize: 85,
+    marginBottom: 64,
+  },
+  resetDay: {
+    position: 'absolute',
+    bottom: 16,
+    right: 16,
   },
 });
 
