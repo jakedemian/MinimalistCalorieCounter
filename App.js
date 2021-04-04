@@ -25,6 +25,8 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 import Dialog from 'react-native-dialog';
 
+import AddItem from './src/components/AddItem';
+
 const Section = ({children, title}): Node => {
   const isDarkMode = useColorScheme() === 'dark';
   return (
@@ -111,20 +113,11 @@ const App: () => Node = () => {
 
 
             {/*Add Food Dialog*/}
-            <Dialog.Container visible={dialog.addItem}>
-              <Dialog.Title>Add</Dialog.Title>
-              <Dialog.Description>
-                Do you want to delete this account? You cannot undo this action.
-              </Dialog.Description>
-              <Dialog.Input
-                label="Name"
-              />
-              <Dialog.Input
-                label="Calories"
-              />
-              <Dialog.Button label="Cancel" onPress={handleAddItemCancel} />
-              <Dialog.Button label="Add" onPress={handleAddItem} />
-            </Dialog.Container>
+            <AddItem 
+              visible={dialog.addItem} 
+              cancel={handleAddItemCancel}
+              confirm={handleAddItem}
+            />
 
             {/*Reset Day Dialog*/}
             <Dialog.Container visible={dialog.resetDay}>
