@@ -3,7 +3,7 @@
  * @flow strict-local
  */
 
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import type {Node} from 'react';
 import {
   SafeAreaView,
@@ -14,43 +14,39 @@ import {
   useColorScheme,
   View,
   Button,
+  Image,
 } from 'react-native';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import AddItem from './src/components/AddItem';
 import ResetDay from './src/components/ResetDay';
 
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
-
 const App: () => Node = () => {
   const isDarkMode = useColorScheme() === 'dark';
   const [dialog, setDialog] = useState({});
-  const [calories, setCalories] = useState(0);
+  const [calories, setCalories] = useState(null);
+  const [dabVisible, setDabVisible] = useState(false);
+
+  const storeData = async value => {
+    try {
+      await AsyncStorage.setItem('@Caloreee_calories', String(value));
+    } catch (e) {}
+  };
+  const getData = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem('@Caloreee_calories');
+
+      if (calories === null) {
+        setCalories(jsonValue != null ? JSON.parse(jsonValue) : 0);
+      }
+    } catch (e) {}
+  };
+
+  useEffect(() => {
+    getData();
+  });
 
   const handleAddItemCancel = () => {
     setDialog({
@@ -63,7 +59,14 @@ const App: () => Node = () => {
       ...dialog,
       addItem: false,
     });
-    setCalories(Number(calories) + Number(itemCalories));
+    const newCals = Number(calories) + Number(itemCalories);
+    console.log(newCals);
+    setCalories(newCals);
+    storeData(newCals);
+    setDabVisible(true);
+    setTimeout(() => {
+      setDabVisible(false);
+    }, 2000);
   };
 
   const handleResetDayCancel = () => {
@@ -78,6 +81,7 @@ const App: () => Node = () => {
       resetDay: false,
     });
     setCalories(0);
+    storeData(0);
   };
 
   const backgroundStyle = {
@@ -91,7 +95,7 @@ const App: () => Node = () => {
       <ScrollView contentContainerStyle={backgroundStyle}>
         <View style={styles.container}>
           <View>
-            <Text style={styles.calories}>{calories}</Text>
+            <Text style={styles.calories}>{calories || 0}</Text>
           </View>
           <Button
             title="Add Item"
@@ -112,6 +116,14 @@ const App: () => Node = () => {
                 });
               }}
             />
+          </View>
+          <View
+            style={{
+              position: 'absolute',
+              top: 16,
+              opacity: dabVisible ? 1 : 0,
+            }}>
+            <Image source={require('./src/assets/fugma_ass.png')} />
           </View>
 
           {/*Add Food Dialog*/}
