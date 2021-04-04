@@ -1,12 +1,9 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
  * @format
  * @flow strict-local
  */
 
-import React from 'react';
+import React, {useState} from 'react';
 import type {Node} from 'react';
 import {
   SafeAreaView,
@@ -16,6 +13,7 @@ import {
   Text,
   useColorScheme,
   View,
+  Button
 } from 'react-native';
 
 import {
@@ -25,6 +23,7 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import Dialog from 'react-native-dialog';
 
 const Section = ({children, title}): Node => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -54,6 +53,36 @@ const Section = ({children, title}): Node => {
 
 const App: () => Node = () => {
   const isDarkMode = useColorScheme() === 'dark';
+  const [dialog, setDialog] = useState({});
+
+  const handleAddItemCancel = () => {
+    setDialog({
+      ...dialog,
+      addItem: false
+    })
+  };
+  const handleAddItem = () => {
+    setDialog({
+      ...dialog,
+      addItem: false
+    })
+  };
+
+  const handleResetDayCancel = () => {
+    setDialog({
+      ...dialog,
+      resetDay: false
+    })
+  };
+  const handleResetDay = () => {
+    setDialog({
+      ...dialog,
+      resetDay: false
+    })
+  };
+
+
+
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -64,49 +93,61 @@ const App: () => Node = () => {
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
+        style={backgroundStyle}>          
+          <View style={styles.container}>
+            <Text>1750</Text>
+            <Button title="Add Item" onPress={() => {
+              setDialog({
+                ...dialog,
+                addItem: true
+              })
+            }} />
+            <Button title="Reset Day" onPress={() => {
+              setDialog({
+                ...dialog,
+                resetDay: true
+              })
+            }} />
+
+
+            {/*Add Food Dialog*/}
+            <Dialog.Container visible={dialog.addItem}>
+              <Dialog.Title>Add</Dialog.Title>
+              <Dialog.Description>
+                Do you want to delete this account? You cannot undo this action.
+              </Dialog.Description>
+              <Dialog.Input
+                label="Name"
+              />
+              <Dialog.Input
+                label="Calories"
+              />
+              <Dialog.Button label="Cancel" onPress={handleAddItemCancel} />
+              <Dialog.Button label="Add" onPress={handleAddItem} />
+            </Dialog.Container>
+
+            {/*Reset Day Dialog*/}
+            <Dialog.Container visible={dialog.resetDay}>
+              <Dialog.Title>Reset?</Dialog.Title>
+              <Dialog.Description>
+                Do you want to reset the counter?
+              </Dialog.Description>
+              <Dialog.Button label="Cancel" onPress={handleResetDayCancel} />
+              <Dialog.Button label="Yes, Reset" onPress={handleResetDay} />
+            </Dialog.Container>
+          </View>
       </ScrollView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  }
 });
 
 export default App;
