@@ -167,7 +167,7 @@ const App: () => Node = () => {
 
           <View style={styles.spacer}></View>
 
-          <View>
+          <View style={{width: 200}}>
             <Button
               onPress={() => setAddItemModalVisible(true)}
               title="Add Item"
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   calories: {
-    fontSize: 85,
+    fontSize: 105,
     marginBottom: 0,
     textAlign: 'center',
   },
@@ -210,6 +210,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 16,
     right: 16,
+    width: 150,
   },
   modal: {
     flex: 1,
